@@ -6,7 +6,7 @@ int main()
 {
 	setlocale(LC_ALL, "ru");
 
-	Graph g("graph2.txt");
+	Graph g("graph3.txt");
 
 	if (g)
 	{
@@ -15,7 +15,7 @@ int main()
 
 		g.printCentralVertices();
 		g.printPeripheralVertices();
-		__asm int 3;
+		//__asm int 3;
 	}
 	else
 	{

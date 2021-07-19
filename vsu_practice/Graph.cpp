@@ -43,7 +43,8 @@ std::vector<float> Dijkstra(Matrix<float>& w, const int n, int st)
 
 Graph::Graph()
 {
-	printf("Дефолтный конструктор не юзабельный!\n");
+	fprintf(stderr, "Error: do not use default constructor\n");
+	error = 2;
 }
 
 Graph::Graph(std::string filename, InputType type)
@@ -68,13 +69,6 @@ Graph::Graph(std::string filename, InputType type)
 		break;
 	}
 
-	DEBUG("Вершины графа: ");
-	for (auto& v : _vertices)
-	{
-		DEBUG("%s ", v.first.c_str());
-	}
-	DEBUG("\n");
-
 	Matrix<float> paths(_order);
 	for (int i = 0; i < _order; i++)
 	{
@@ -86,12 +80,18 @@ Graph::Graph(std::string filename, InputType type)
 		float max = FLT_MIN;
 		for (int j = 0; j < _order; j++)
 		{	
-			if (paths[j][i] > max && paths[j][i] != FLT_MAX)
-				max = paths[j][i];
+			if (paths[i][j] > max && paths[i][j] != FLT_MAX)
+				max = paths[i][j];
 		}
 		_eccentricities.push_back((max != FLT_MIN) ? max : FLT_MAX);
 	}
 
+#ifndef NDEBUG
+	for (auto it = _vertices.begin(); it != _vertices.end(); ++it)
+	{
+		printEccentricity(it->first);
+	}
+#endif
 }
 
 Graph::operator bool() const
@@ -128,14 +128,19 @@ void Graph::_readAsVertexList(std::ifstream& fs)
 		float weight;
 		std::stringstream ss(line);
 		ss >> src >> dest >> weight;
-		DEBUG("(%s, %s) weight: %f\n", src.c_str(), dest.c_str(), weight);
 
 		_adjacencyMatrix[_vertices[src]][_vertices[dest]] = weight;
 	}
 
-	
+#ifndef NDEBUG
+	printf("Вершины графа: ");
+	for (auto& v : _vertices)
+	{
+		printf("%s ", v.first.c_str());
+	}
+	printf("\n");
 
-#if not defined NDEBUG
+	printf("Матрица смежности:\n");
 	for (int i = 0; i < _order; i++)
 	{
 		for (int j = 0; j < _order; j++)

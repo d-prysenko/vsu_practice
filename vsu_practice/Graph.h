@@ -51,13 +51,8 @@ private:
 	int _order = 0;
 	float _radius = -1;
 	float _diameter = -1;
-	//std::vector<Vertex> _vertices;
 	std::map<std::string, int> _vertices;
-	
 	std::vector<float> _eccentricities;
-	//std::vector<Vertex*> _centralVertices;
-	//std::vector<Vertex*> _peripheralVertices;
-
 	Matrix<float> _adjacencyMatrix;
 
 	void _readAsVertexList(std::ifstream& fs);

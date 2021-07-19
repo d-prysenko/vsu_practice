@@ -18,31 +18,24 @@
 template<class T>
 using Matrix = std::vector<std::vector<T>>;
 
-struct Vertex
-{
-	std::string name;
-	float eccentricity;
-
-	Vertex(std::string n)
-		: name(n), eccentricity(-1)
-	{}
-};
-
 class Graph
 {
 public:
-	enum InputType : uint8_t
+	enum class InputType : uint8_t
 	{
 		VertexList,
 		AdjacencyMatrix
 	};
 	
 	Graph();
-	Graph(std::string filename, InputType type = VertexList);
+	Graph(std::string filename, InputType type = InputType::VertexList);
+
+	operator bool() const;
 
 	int getOrder();
 
 	float getEccentricity(std::string v);
+	float getEccentricity(int index);
 	float getDiameter();
 	std::vector<std::string> getPeripheralVertices();
 	float getRadius();
@@ -54,16 +47,16 @@ public:
 
 private:
 	
+	uint8_t error = 0;
 	int _order = 0;
 	float _radius = -1;
 	float _diameter = -1;
 	//std::vector<Vertex> _vertices;
 	std::map<std::string, int> _vertices;
-	std::vector<Vertex> _vertices2;
+	
 	std::vector<float> _eccentricities;
-	//std::map<Vertex, float> _eccentricities;
-	std::vector<Vertex*> _centralVertices;
-	std::vector<Vertex*> _peripheralVertices;
+	//std::vector<Vertex*> _centralVertices;
+	//std::vector<Vertex*> _peripheralVertices;
 
 	Matrix<float> _adjacencyMatrix;
 

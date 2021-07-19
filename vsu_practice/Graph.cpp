@@ -1,16 +1,17 @@
 #include "Graph.h"
 
 
-//Алгоритм Дейкстры
 std::vector<float> Dijkstra(Matrix<float>& w, const int n, int st)
 {
 	bool* visited = new bool[n];
 	std::vector<float> D;
+
 	for (int i = 0; i < n; i++)
 	{
 		D.push_back(w[st][i]);
 		visited[i] = false;
 	}
+
 	D[st] = 0;
 	int index = 0, u = 0;
 	for (int i = 0; i < n; i++)
@@ -34,17 +35,6 @@ std::vector<float> Dijkstra(Matrix<float>& w, const int n, int st)
 			}
 		}
 	}
-	
-	//std::cout << "Стоимость пути из начальной вершины до остальных(Алгоритм Дейкстры):\t\n";
-	//for (int i = 0; i < n; i++)
-	//{
-		//if (D[i] != FLT_MAX)
-		//{
-			//std::cout << st << " -> " << i << " = " << D[i] << std::endl;
-		//}
-		//else
-			//std::cout << st << " -> " << i << " = " << "маршрут недоступен" << std::endl;
-	//}
 
 	delete[] visited;
 	return D;
@@ -61,17 +51,17 @@ Graph::Graph(std::string filename, InputType type)
 	std::ifstream fs(filename);
 	if (!fs)
 	{
-		fprintf(stderr, "Error: cannot open input file \"%s\" !", filename.c_str());
-		// TODO: set error bit flag 
+		fprintf(stderr, "Error: cannot open input file \"%s\"!\n", filename.c_str());
+		error = 1;
 		return;
 	}
 
 	switch (type)
 	{
-	case Graph::VertexList:
+	case Graph::InputType::VertexList:
 		_readAsVertexList(fs);
 		break;
-	case Graph::AdjacencyMatrix:
+	case Graph::InputType::AdjacencyMatrix:
 		_readAsAdjacencyMatrix(fs);
 		break;
 	default:
@@ -81,7 +71,6 @@ Graph::Graph(std::string filename, InputType type)
 	DEBUG("Вершины графа: ");
 	for (auto& v : _vertices)
 	{
-		//v.first.eccentricity = getEccentricity(v);
 		DEBUG("%s ", v.first.c_str());
 	}
 	DEBUG("\n");
@@ -105,11 +94,15 @@ Graph::Graph(std::string filename, InputType type)
 
 }
 
+Graph::operator bool() const
+{
+	return error == 0;
+}
+
 int Graph::getOrder()
 {
 	return _order;
 }
-
 
 void Graph::_readAsVertexList(std::ifstream& fs)
 {
@@ -162,7 +155,24 @@ void Graph::_readAsAdjacencyMatrix(std::ifstream& fs)
 // getting eccentricity for vertex v
 float Graph::getEccentricity(std::string v)
 {
+	if (_vertices.find(v) == _vertices.end())
+	{
+		fprintf(stderr, "Error: there is no vertex with alias \"%s\"!\n", v.c_str());
+		return 0;
+	}
+
 	return _eccentricities[_vertices[v]];
+}
+
+float Graph::getEccentricity(int index)
+{
+	if (index >= _order)
+	{
+		fprintf(stderr, "Error: there is no vertex with index %d!\n", index);
+		return 0;
+	}
+
+	return _eccentricities[index];
 }
 
 void Graph::printEccentricity(std::string v)

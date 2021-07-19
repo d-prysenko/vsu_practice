@@ -7,6 +7,7 @@
 #include <map>
 #include <algorithm>
 
+// Отключение отладочной информации
 //#define NDEBUG
 
 #if defined NDEBUG
@@ -31,7 +32,7 @@ public:
 	Graph(std::string filename, InputType type = InputType::VertexList);
 
 	operator bool() const;
-
+	
 	int getOrder();
 
 	float getEccentricity(std::string v);
@@ -42,6 +43,8 @@ public:
 	std::vector<std::string> getCentralVertices();
 
 	void printEccentricity(std::string v);
+	void printDiameter();
+	void printRadius();
 	void printCentralVertices();
 	void printPeripheralVertices();
 

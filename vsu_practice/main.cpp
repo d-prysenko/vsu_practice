@@ -12,8 +12,8 @@ int main()
 	// Проверка, что все открылось и считалось корректно
 	if (g)
 	{
-		printf("Радиус графа: %f\n", g.getRadius());
-		printf("Диаметр графа: %f\n", g.getDiameter());
+		g.printRadius();
+		g.printDiameter();
 
 		// Печать центральных и периферийных вершин
 		g.printCentralVertices();

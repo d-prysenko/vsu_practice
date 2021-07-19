@@ -43,7 +43,7 @@ std::vector<float> Dijkstra(Matrix<float>& w, const int n, int st)
 
 Graph::Graph()
 {
-	printf("Дефолтный конструктор не юзабельный!\n");
+	printf("Р”РµС„РѕР»С‚РЅС‹Р№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РЅРµ СЋР·Р°Р±РµР»СЊРЅС‹Р№!\n");
 }
 
 Graph::Graph(std::string filename, InputType type)
@@ -68,7 +68,7 @@ Graph::Graph(std::string filename, InputType type)
 		break;
 	}
 
-	DEBUG("Вершины графа: ");
+	DEBUG("Р’РµСЂС€РёРЅС‹ РіСЂР°С„Р°: ");
 	for (auto& v : _vertices)
 	{
 		DEBUG("%s ", v.first.c_str());
@@ -178,7 +178,7 @@ float Graph::getEccentricity(int index)
 void Graph::printEccentricity(std::string v)
 {
 	float e = getEccentricity(v);
-	printf("Эксцентриситет %s = ", v.c_str());
+	printf("Р­РєСЃС†РµРЅС‚СЂРёСЃРёС‚РµС‚ %s = ", v.c_str());
 	if (e == FLT_MAX) printf("inf\n");
 	else printf("%.2f\n", e);
 }
@@ -216,11 +216,11 @@ void Graph::printPeripheralVertices()
 	auto vv = getPeripheralVertices();
 	if (vv.size() == 0)
 	{
-		printf("Периферийных вершин нет\n");
+		printf("РџРµСЂРёС„РµСЂРёР№РЅС‹С… РІРµСЂС€РёРЅ РЅРµС‚\n");
 	}
 	else
 	{
-		printf("Периферийные вершины: ");
+		printf("РџРµСЂРёС„РµСЂРёР№РЅС‹Рµ РІРµСЂС€РёРЅС‹: ");
 		for (auto& v : vv)
 		{
 			printf("%s ", v.c_str());
@@ -257,11 +257,11 @@ void Graph::printCentralVertices()
 
 	if (vv.size() == 0)
 	{
-		printf("Центральных вершин нет\n");
+		printf("Р¦РµРЅС‚СЂР°Р»СЊРЅС‹С… РІРµСЂС€РёРЅ РЅРµС‚\n");
 	}
 	else
 	{
-		printf("Центральные вершины: ");
+		printf("Р¦РµРЅС‚СЂР°Р»СЊРЅС‹Рµ РІРµСЂС€РёРЅС‹: ");
 		for (auto& v : vv)
 		{
 			printf("%s ", v.c_str());

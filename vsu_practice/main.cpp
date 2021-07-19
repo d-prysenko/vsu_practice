@@ -10,8 +10,8 @@ int main()
 
 	if (g)
 	{
-		printf("Радиус графа: %f\n", g.getRadius());
-		printf("Диаметр графа: %f\n", g.getDiameter());
+		printf("Р Р°РґРёСѓСЃ РіСЂР°С„Р°: %f\n", g.getRadius());
+		printf("Р”РёР°РјРµС‚СЂ РіСЂР°С„Р°: %f\n", g.getDiameter());
 
 		g.printCentralVertices();
 		g.printPeripheralVertices();

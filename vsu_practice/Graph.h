@@ -58,5 +58,7 @@ private:
 	void _readAsVertexList(std::ifstream& fs);
 	void _readAsAdjacencyMatrix(std::ifstream& fs);
 
+	std::vector<float> _dijkstra(int src);
+
 };
 

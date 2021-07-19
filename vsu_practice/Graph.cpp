@@ -1,46 +1,6 @@
 #include "Graph.h"
 
 
-std::vector<float> Dijkstra(Matrix<float>& w, const int n, int st)
-{
-	bool* visited = new bool[n];
-	std::vector<float> D;
-
-	for (int i = 0; i < n; i++)
-	{
-		D.push_back(w[st][i]);
-		visited[i] = false;
-	}
-
-	D[st] = 0;
-	int index = 0, u = 0;
-	for (int i = 0; i < n; i++)
-	{
-		float min = FLT_MAX;
-		for (int j = 0; j < n; j++)
-		{
-			if (!visited[j] && D[j] < min)
-			{
-				min = D[j];
-				index = j;
-			}
-		}
-		u = index;
-		visited[u] = true;
-		for (int j = 0; j < n; j++)
-		{
-			if (!visited[j] && w[u][j] != FLT_MAX && D[u] != FLT_MAX && (D[u] + w[u][j] < D[j]))
-			{
-				D[j] = D[u] + w[u][j];
-			}
-		}
-	}
-
-	delete[] visited;
-	return D;
-}
-
-
 Graph::Graph()
 {
 	fprintf(stderr, "Error: do not use default constructor\n");
@@ -72,7 +32,7 @@ Graph::Graph(std::string filename, InputType type)
 	Matrix<float> paths(_order);
 	for (int i = 0; i < _order; i++)
 	{
-		paths[i] = Dijkstra(_adjacencyMatrix, _order, i);
+		paths[i] = _dijkstra(i);
 	}
 	
 	for (int i = 0; i < _order; i++)
@@ -80,7 +40,7 @@ Graph::Graph(std::string filename, InputType type)
 		float max = FLT_MIN;
 		for (int j = 0; j < _order; j++)
 		{	
-			if (paths[i][j] > max && paths[i][j] != FLT_MAX)
+			if (paths[i][j] > max)
 				max = paths[i][j];
 		}
 		_eccentricities.push_back((max != FLT_MIN) ? max : FLT_MAX);
@@ -125,8 +85,8 @@ void Graph::_readAsVertexList(std::ifstream& fs)
 	while (std::getline(fs, line))
 	{
 		std::string src, dest;
-		float weight;
 		std::stringstream ss(line);
+		float weight;
 		ss >> src >> dest >> weight;
 
 		_adjacencyMatrix[_vertices[src]][_vertices[dest]] = weight;
@@ -273,4 +233,43 @@ void Graph::printCentralVertices()
 		}
 		printf("\n");
 	}
+}
+
+std::vector<float> Graph::_dijkstra(int st)
+{
+	bool* visited = new bool[_order];
+	std::vector<float> D;
+
+	for (int i = 0; i < _order; i++)
+	{
+		D.push_back(_adjacencyMatrix[st][i]);
+		visited[i] = false;
+	}
+
+	D[st] = 0;
+	int index = 0, u = 0;
+	for (int i = 0; i < _order; i++)
+	{
+		float min = FLT_MAX;
+		for (int j = 0; j < _order; j++)
+		{
+			if (!visited[j] && D[j] < min)
+			{
+				min = D[j];
+				index = j;
+			}
+		}
+		u = index;
+		visited[u] = true;
+		for (int j = 0; j < _order; j++)
+		{
+			if (!visited[j] && _adjacencyMatrix[u][j] != FLT_MAX && D[u] != FLT_MAX && (D[u] + _adjacencyMatrix[u][j] < D[j]))
+			{
+				D[j] = D[u] + _adjacencyMatrix[u][j];
+			}
+		}
+	}
+
+	delete[] visited;
+	return D;
 }

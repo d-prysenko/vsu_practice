@@ -1,33 +1,32 @@
 // Подключение заголовочных файлов
 #include <iostream>
 #include "Graph.h"
+#include "GraphLoader.h"
+#include "GraphPrinter.hpp"
 
 int main()
 {
 	setlocale(LC_ALL, "ru");
 
-	// Создание экземпляра класса Graph с исходными данными из файла graph.txt
-	Graph g("graph1.txt");
+	Graph g;
 
-	// Проверка, что все открылось и считалось корректно
-	if (g)
-	{
-		g.printRadius();
-		g.printDiameter();
-
-		// Печать центральных и периферийных вершин
-		g.printCentralVertices();
-		g.printPeripheralVertices();
+	try {
+		g = GraphLoader::fromFileAsVertexList("graph1.txt");
 	}
-	else
-	{
-		// Если в процессе инициализации графа что-то пошло не так,
-		// то написать в стандартный поток для ошибок сообщение
-		// и вернуть системе код -1, сигнализирующий о неудаче
-		fprintf(stderr, "Failure, exiting..\n");
+	catch (std::exception e) {
+		fprintf(stderr, e.what());
+
 		system("pause");
 		return -1;
 	}
+
+	GraphPrinter gp(g);
+
+	gp.printRadius();
+	gp.printDiameter();
+
+	gp.printCentralVertices();
+	gp.printPeripheralVertices();
 
 	system("pause");
 	return 0;

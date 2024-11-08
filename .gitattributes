@@ -2,7 +2,12 @@
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text=auto
-*.*	working-tree-encoding=CP1251	eol=CRLF
+
+*.cpp	working-tree-encoding=CP1251	eol=CRLF
+*.h     working-tree-encoding=CP1251    eol=CRLF
+*.hpp   working-tree-encoding=CP1251    eol=CRLF
+*.c     working-tree-encoding=CP1251    eol=CRLF
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #

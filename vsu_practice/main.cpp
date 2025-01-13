@@ -5,6 +5,7 @@
 #include "GraphPrinter.hpp"
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 // You shouldn't really use this statement, but it's fine for small programs
 using namespace std;
@@ -19,6 +20,8 @@ SDL_Renderer* renderer;
 
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 1000;
+
+TTF_Font* font;
 
 int main(int argc, char** args) {
 
@@ -73,94 +76,85 @@ void DrawCircle(SDL_Renderer* renderer, int32_t centreX, int32_t centreY, int32_
 
 
 float scaleFactor = 1.0f;
+const float scaleAmount = 1.3f;
 static int mx0 = -1, my0 = -1, mx1 = -1, my1 = -1;
-
-int posScaleX = (WINDOW_WIDTH / 2);
-int posScaleY = (WINDOW_HEIGHT / 2);
-
-//int to_abs_x(int x)
-//{
-//	//return (WINDOW_WIDTH / 2) + x * scaleFactor;
-//	return posScaleX + (x - posScaleX) * scaleFactor;
-//}
-//
-//int to_abs_y(int y)
-//{
-//	//return (WINDOW_HEIGHT/ 2) - y * scaleFactor;
-//	return posScaleY + (y - posScaleY) * scaleFactor;
-//}
-
-int to_window_x(int x)
-{
-	return (WINDOW_WIDTH / 2) + x;
-	return x;
-}
-
-int to_window_y(int y)
-{
-	return (WINDOW_HEIGHT/ 2) - y;
-	return y;
-}
-
-int to_loc_x(int x)
-{
-	return (x - (WINDOW_WIDTH / 2));
-}
-
-int to_loc_y(int y)
-{
-	return ((WINDOW_HEIGHT / 2) - y) / scaleFactor;
-}
 
 int centerTransX = 0;
 int centerTransY = 0;
 
-int trans_loc_x(int x)
+float loc_to_window_x(float loc_x)
 {
-	return scaleFactor * x + centerTransX;
-	//return to_loc_x(posScaleX) + (x - to_loc_x(posScaleX)) * scaleFactor;
-	//     -5000               + (50 + 5000) * 0.2
+	return (WINDOW_WIDTH / 2) + scaleFactor * (loc_x + centerTransX);
 }
 
-int trans_loc_y(int y)
+float loc_to_window_y(float loc_y)
 {
-	return scaleFactor * y + centerTransY;
-	//return to_loc_y(posScaleY) + (y - to_loc_y(posScaleY)) * scaleFactor;
+	return (WINDOW_HEIGHT / 2) - scaleFactor * (loc_y + centerTransY);
 }
 
-//int translate_x(int x)
-//{
-//	return posScaleX + (x - posScaleX) * scaleFactor;
-//}
-//
-//int translate_y(int y)
-//{
-//	return posScaleY + (y - posScaleY) * scaleFactor;
-//}
-
-void calcCenterTranslate(float t)
+float window_to_loc_x(float window_x)
 {
-	centerTransX += (to_loc_x(mx1) - to_loc_x(mx1) * t);
-	//centerTransY += (to_loc_y(my1) - centerTransY) * scaleFactor;
+	return (window_x - (WINDOW_WIDTH / 2)) / scaleFactor - centerTransX;
 }
 
-float oldScale = scaleFactor;
+float window_to_loc_y(float window_y)
+{
+	return ((WINDOW_HEIGHT / 2) - window_y ) / scaleFactor - centerTransY;
+}
+
+float calc_x_trans_for_new_scale(float loc_x, float window_x)
+{
+	return (window_x - (WINDOW_WIDTH / 2)) / scaleFactor - loc_x;
+}
+
+float calc_y_trans_for_new_scale(float loc_y, float window_y)
+{
+	return ((WINDOW_HEIGHT / 2) - window_y) / scaleFactor - loc_y;
+}
 
 void scaleUp()
 {
-	oldScale = scaleFactor;
-	scaleFactor += 0.005f;
-	calcCenterTranslate(oldScale/scaleFactor);
+	float x = window_to_loc_x(mx1);
+	float y = window_to_loc_y(my1);
+
+	scaleFactor *= scaleAmount;
+
+	centerTransX = calc_x_trans_for_new_scale(x, mx1);
+	centerTransY = calc_y_trans_for_new_scale(y, my1);
 }
 
 void scaleDown()
 {
 	if (scaleFactor > 0)
 	{
-		oldScale = scaleFactor;
-		scaleFactor -= 0.005f;
+		float x = window_to_loc_x(mx1);
+		float y = window_to_loc_y(my1);
+
+		scaleFactor /= scaleAmount;
+
+		centerTransX = calc_x_trans_for_new_scale(x, mx1);
+		centerTransY = calc_y_trans_for_new_scale(y, my1);
 	}
-	calcCenterTranslate(oldScale / scaleFactor);
+}
+
+
+
+void render_text(std::string str, int x, int y)
+{
+	SDL_Rect dest;
+	SDL_Color foreground = { 0, 0, 0 };
+	SDL_Surface* text_surf = TTF_RenderText_Solid(font, str.c_str(), foreground);
+
+	SDL_Texture* text = SDL_CreateTextureFromSurface(renderer, text_surf);
+
+	dest.x = x;
+	dest.y = y;
+	dest.w = text_surf->w;
+	dest.h = text_surf->h;
+	SDL_RenderCopy(renderer, text, NULL, &dest);
+
+	SDL_DestroyTexture(text);
+	SDL_FreeSurface(text_surf);
 }
 
 bool loop() {
@@ -192,6 +186,14 @@ bool loop() {
 		case SDL_MOUSEBUTTONUP:
 			mx0 = my0 = mx1 = my1 = -1;
 			break;
+		case SDL_MOUSEWHEEL:
+			//render_text(std::to_string(e.wheel.y), 500, 10);
+			if (e.wheel.y > 0) {
+				scaleUp();
+			}
+			else {
+				scaleDown();
+			}
 		}
 	}
 
@@ -217,8 +219,8 @@ bool loop() {
 		SDL_RenderFillRect(renderer, &r);
 	}
 
-	DrawCircle(renderer, to_window_x(trans_loc_x(0)), to_window_y(trans_loc_y(0)), 25 * scaleFactor);
-	//DrawCircle(renderer, to_window_x(trans_loc_x(-150, 150)), to_window_y(trans_loc_y(-150, 150)), 15 * scaleFactor);
+	DrawCircle(renderer, loc_to_window_x(0), loc_to_window_y(0), 25.0 * scaleFactor);
+	DrawCircle(renderer, loc_to_window_x(200), loc_to_window_y(150), 15.0 * scaleFactor);
 	//DrawCircle(renderer, to_window_x(trans_loc_x(100, 50)), to_window_y(trans_loc_y(100, 50)), 15 * scaleFactor);
 
 	//DrawCircle(renderer, translate_x(to_window_x(0)), translate_y(to_window_y(0)), 25 * scaleFactor);
@@ -237,11 +239,20 @@ bool loop() {
 
 	}
 
+	render_text(std::to_string(scaleFactor), 10, 10);
+	render_text("x: " + std::to_string(mx1), 10, 60);
+	render_text("y: " + std::to_string(my1), 10, 110);
+	render_text("local x: " + std::to_string(window_to_loc_x(mx1)), 10, 160);
+	render_text("local y: " + std::to_string(window_to_loc_y(my1)), 10, 210);
+
+
 	// Update window
 	SDL_RenderPresent(renderer);
 
 	return true;
 }
+
+
 
 bool init() {
 	// See last example for comments
@@ -249,6 +260,10 @@ bool init() {
 		cout << "Error initializing SDL: " << SDL_GetError() << endl;
 		system("pause");
 		return false;
+	}
+
+	if (TTF_Init() < 0) {
+		cout << "Error initializing SDL_ttf: " << TTF_GetError() << endl;
 	}
 
 	window = SDL_CreateWindow("Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
@@ -261,6 +276,13 @@ bool init() {
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (!renderer) {
 		cout << "Error creating renderer: " << SDL_GetError() << endl;
+		return false;
+	}
+
+	// Load font
+	font = TTF_OpenFont("CascadiaCode.ttf", 50);
+	if (!font) {
+		cout << "Error loading font: " << TTF_GetError() << endl;
 		return false;
 	}
 

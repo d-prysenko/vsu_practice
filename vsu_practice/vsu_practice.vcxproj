@@ -148,10 +148,13 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Basis.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="GraphLoader.h" />
     <ClInclude Include="GraphPrinter.hpp" />
     <ClInclude Include="GraphRelations.h" />
+    <ClInclude Include="Mouse.h" />
+    <ClInclude Include="RenderMisc.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="graph1.txt" />

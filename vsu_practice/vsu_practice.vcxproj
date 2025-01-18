@@ -78,8 +78,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\repos\include\SDL2;$(IncludePath)</IncludePath>
+    <IncludePath>D:\repos\include\SDL2;D:\repos\vsu_practice\vsu_practice\gui;$(IncludePath)</IncludePath>
     <LibraryPath>D:\repos\lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>D:\repos\vsu_practice\vsu_practice\gui;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -145,6 +146,17 @@
   <ItemGroup>
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="GraphLoader.cpp" />
+    <ClCompile Include="GraphView.cpp" />
+    <ClCompile Include="GraphView.h" />
+    <ClCompile Include="gui\imgui.cpp" />
+    <ClCompile Include="gui\imgui_demo.cpp" />
+    <ClCompile Include="gui\imgui_draw.cpp" />
+    <ClCompile Include="gui\imgui_impl_sdl2.cpp" />
+    <ClCompile Include="gui\imgui_impl_sdlrenderer2.cpp" />
+    <ClCompile Include="gui\imgui_stdlib.cpp" />
+    <ClCompile Include="gui\imgui_tables.cpp" />
+    <ClCompile Include="gui\imgui_widgets.cpp" />
+    <ClCompile Include="imgui_popup.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +165,16 @@
     <ClInclude Include="GraphLoader.h" />
     <ClInclude Include="GraphPrinter.hpp" />
     <ClInclude Include="GraphRelations.h" />
+    <ClInclude Include="gui\imconfig.h" />
+    <ClInclude Include="gui\imgui.h" />
+    <ClInclude Include="gui\imgui_impl_sdl2.h" />
+    <ClInclude Include="gui\imgui_impl_sdlrenderer2.h" />
+    <ClInclude Include="gui\imgui_internal.h" />
+    <ClInclude Include="gui\imgui_stdlib.h" />
+    <ClInclude Include="gui\imstb_rectpack.h" />
+    <ClInclude Include="gui\imstb_textedit.h" />
+    <ClInclude Include="gui\imstb_truetype.h" />
+    <ClInclude Include="imgui_popup.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="RenderMisc.h" />
   </ItemGroup>
@@ -161,6 +183,10 @@
     <Text Include="graph2.txt" />
     <Text Include="graph3.txt" />
     <Text Include="graph4.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gui\imgui.gdb" />
+    <None Include="gui\imgui.natstepfilter" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

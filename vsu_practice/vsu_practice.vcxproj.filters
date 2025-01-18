@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{6e1792ac-b94c-4a9f-b71a-109bdfe368f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -22,6 +25,39 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="GraphLoader.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui_impl_sdl2.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui_impl_sdlrenderer2.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui_stdlib.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_popup.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphView.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphView.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,6 +83,36 @@
     <ClInclude Include="RenderMisc.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="gui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui_impl_sdl2.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui_impl_sdlrenderer2.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imgui_stdlib.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_popup.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="graph1.txt">
@@ -61,5 +127,13 @@
     <Text Include="graph4.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gui\imgui.gdb">
+      <Filter>imgui</Filter>
+    </None>
+    <None Include="gui\imgui.natstepfilter">
+      <Filter>imgui</Filter>
+    </None>
   </ItemGroup>
 </Project>

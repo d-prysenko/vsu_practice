@@ -1,13 +1,25 @@
 #include <iostream>
+#include <vector>
+#include <format>
 #include "Graph.h"
 #include "GraphLoader.h"
 #include "GraphPrinter.hpp"
 #include "Basis.h"
 #include "Mouse.h"
 #include "RenderMisc.h"
+#include "GraphView.h"
+
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_sdlrenderer2.h"
+#include "imgui_stdlib.h"
+
+#include "imgui_popup.h"
 
 #include <SDL.h>
 #include <SDL_ttf.h>
+
+
 
 bool init();
 void kill();
@@ -17,12 +29,28 @@ bool process_events();
 SDL_Window* window;
 SDL_Renderer* renderer;
 TTF_Font* font;
+TTF_Font* font_small;
 
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 1000;
 
+GraphView graphView;
 Basis basis(WINDOW_WIDTH, WINDOW_HEIGHT);
 Mouse mouse;
+
+
+
+
+
+ImguiPopup vertexPopup;
+
+ImGuiIO* io;
+
+ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+
+
+
 
 int main(int argc, char** args) {
 
@@ -39,6 +67,7 @@ int main(int argc, char** args) {
 
 	return 0;
 }
+
 
 bool init() {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
@@ -64,8 +93,14 @@ bool init() {
 		return false;
 	}
 
-	font = TTF_OpenFont("CascadiaCode.ttf", 50);
+	font = TTF_OpenFont("res/CascadiaCode.ttf", 40);
 	if (!font) {
+		std::cout << "Error loading font: " << TTF_GetError() << std::endl;
+		return false;
+	}
+
+	font_small = TTF_OpenFont("res/CascadiaCode.ttf", 22);
+	if (!font_small) {
 		std::cout << "Error loading font: " << TTF_GetError() << std::endl;
 		return false;
 	}
@@ -73,15 +108,77 @@ bool init() {
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderClear(renderer);
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	io = &ImGui::GetIO(); (void)io;
+	io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsLight();
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+	ImGui_ImplSDLRenderer2_Init(renderer);
+
+	graphView.addVertexDraft(0, 0);
+	graphView.commitVertexDraft("a");
+	graphView.unselectAll();
+
+	graphView.addVertexDraft(200, 300);
+	graphView.commitVertexDraft("b");
+	graphView.unselectAll();
+
+	graphView.addEdge(0, 1, 10);
+
 	return true;
 }
 
+
+
+
+
+void imgui_vertex_popup_confirm(std::string name, std::string weight, bool biderectional)
+{
+	int selected = graphView.selected;
+	int previousSelected = graphView.previousSelected;
+
+	graphView.unselectAll();
+
+	if (selected >= 0)
+	{
+		if (graphView.draft_circle_added) {
+			graphView.commitVertexDraft(name);
+		}		
+
+		if (previousSelected >= 0) {
+			graphView.addEdge(selected, previousSelected, std::stof(weight));
+		}
+	}
+}
+
+void imgui_vertex_popup_close()
+{
+	graphView.unselectAll();
+
+	if (graphView.draft_circle_added) {
+		graphView.removeVertexDraft();
+	}
+}
 
 bool loop()
 {
 	if (!process_events()) {
 		return false;
 	}
+
+
+	ImGui_ImplSDLRenderer2_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
+	ImGui::NewFrame();
+
+	vertexPopup.render(graphView.previousSelected >= 0, imgui_vertex_popup_close, imgui_vertex_popup_confirm);
 
 	// Clear the window to white
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -90,18 +187,89 @@ bool loop()
 	// Set drawing color to black
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
-	render_circle(renderer, basis.loc_to_window_x(0), basis.loc_to_window_y(0), 25.0 * basis.get_scale());
-	render_circle(renderer, basis.loc_to_window_x(200), basis.loc_to_window_y(150), 15.0 * basis.get_scale());
+	for (const Circle& circle : graphView.getCircles())
+	{
+		render_circle(renderer, basis.loc_to_window_x(circle.x), basis.loc_to_window_y(circle.y), circle.radius * basis.get_scale());
+		render_text(renderer, font_small, circle.name, basis.loc_to_window_x(circle.x), basis.loc_to_window_y(circle.y), true);
+	}
+
+	for (const Edge& edge : graphView.getEdges())
+	{
+		SDL_RenderDrawLine(
+			renderer,
+			basis.loc_to_window_x(edge.line.x1), basis.loc_to_window_y(edge.line.y1),
+			basis.loc_to_window_x(edge.line.x2), basis.loc_to_window_y(edge.line.y2)
+		);
+
+		render_text(renderer,
+			font_small,
+			std::format("{:.1f}", edge.weight),
+			basis.loc_to_window_x((edge.line.x1 + edge.line.x2) / 2.0),
+			basis.loc_to_window_y((edge.line.y1 + edge.line.y2) / 2.0)
+		);
+	}
+
+	//Line l = get_line_between_circles(circles[0], circles[1]);
+
+	//SDL_RenderDrawLine(
+	//	renderer,
+	//	basis.loc_to_window_x(l.x1), basis.loc_to_window_y(l.y1),
+	//	basis.loc_to_window_x(l.x2), basis.loc_to_window_y(l.y2)
+	//);
 
 	render_text(renderer, font, std::to_string(basis.get_scale()), 10, 10);
-	render_text(renderer, font, "x: " + std::to_string(mouse.x), 10, 60);
-	render_text(renderer, font, "y: " + std::to_string(mouse.y), 10, 110);
-	render_text(renderer, font, "local x: " + std::to_string(basis.window_to_loc_x(mouse.x)), 10, 160);
-	render_text(renderer, font, "local y: " + std::to_string(basis.window_to_loc_y(mouse.y)), 10, 210);
+	render_text(renderer, font, "x: " + std::to_string(mouse.x), 10, 10 + 40 * 1);
+	render_text(renderer, font, "y: " + std::to_string(mouse.y), 10, 10 + 40 * 2);
+	render_text(renderer, font, "local x: " + std::to_string(basis.window_to_loc_x(mouse.x)), 10, 10 + 40 * 3);
+	render_text(renderer, font, "local y: " + std::to_string(basis.window_to_loc_y(mouse.y)), 10, 10 + 40 * 4);
 
+	if (graphView.selected >= 0)
+	{
+		render_text(
+			renderer,
+			font,
+			"selected: " +
+			(graphView.previousSelected >= 0 ?
+				graphView.getPreviousSelectedCircle()->name + "-" :
+				"") + graphView.getSelectedCircle()->name,
+			10, 940
+		);
+	}
+
+	ImGui::Render();
+	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
 	SDL_RenderPresent(renderer);
 
 	return true;
+}
+
+void on_mouse_button_down()
+{
+	if (vertexPopup.opened()) {
+		return;
+	}
+
+	graphView.tryToSelectByCoords(basis.window_to_loc_x(mouse.x), basis.window_to_loc_y(mouse.y));
+
+	if (graphView.selected >= 0 && graphView.selected == graphView.previousSelected) {
+		return;
+	}
+
+	if (graphView.selected >= 0 && graphView.previousSelected < 0) {
+		return;
+	}
+
+	if (graphView.hasEdge(graphView.previousSelected, graphView.selected)) {
+		graphView.unselectAll();
+		return;
+	}
+
+	vertexPopup.open();
+
+	if (graphView.selected < 0)
+	{
+		graphView.addVertexDraft(basis.window_to_loc_x(mouse.x), basis.window_to_loc_y(mouse.y));
+	}
 }
 
 bool process_events()
@@ -110,9 +278,14 @@ bool process_events()
 
 	// Event loop
 	while (SDL_PollEvent(&e) != 0) {
+		ImGui_ImplSDL2_ProcessEvent(&e);
+
 		switch (e.type) {
 		case SDL_QUIT:
 			return false;
+		case SDL_MOUSEBUTTONDOWN:
+			on_mouse_button_down();
+			break;
 		case SDL_MOUSEMOTION:
 			mouse.x = e.button.x;
 			mouse.y = e.button.y;
@@ -120,9 +293,11 @@ bool process_events()
 		case SDL_MOUSEWHEEL:
 			if (e.wheel.y > 0) {
 				basis.scale_up(mouse.x, mouse.y);
+				TTF_SetFontSize(font_small, 22 * basis.get_scale());
 			}
 			else {
 				basis.scale_down(mouse.x, mouse.y);
+				TTF_SetFontSize(font_small, 22 * basis.get_scale());
 			}
 		}
 	}
@@ -133,6 +308,9 @@ bool process_events()
 
 void kill() {
 	// Quit
+	TTF_CloseFont(font_small);
+	TTF_CloseFont(font);
+	TTF_Quit();
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

@@ -34,13 +34,12 @@ TTF_Font* font_small;
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 1000;
 
+
+Graph graph;
 GraphView graphView;
+
 Basis basis(WINDOW_WIDTH, WINDOW_HEIGHT);
 Mouse mouse;
-
-
-
-
 
 ImguiPopup vertexPopup;
 
@@ -48,7 +47,8 @@ ImGuiIO* io;
 
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-
+std::string distance = "";
+std::string path = "";
 
 
 
@@ -80,7 +80,7 @@ bool init() {
 		std::cout << "Error initializing SDL_ttf: " << TTF_GetError() << std::endl;
 	}
 
-	window = SDL_CreateWindow("Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 	if (!window) {
 		std::cout << "Error creating window: " << SDL_GetError() << std::endl;
 		system("pause");
@@ -122,21 +122,21 @@ bool init() {
 	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer2_Init(renderer);
 
+	graph.addVertex("a");
 	graphView.addVertexDraft(0, 0);
 	graphView.commitVertexDraft("a");
 	graphView.unselectAll();
 
+	graph.addVertex("b");
 	graphView.addVertexDraft(200, 300);
 	graphView.commitVertexDraft("b");
 	graphView.unselectAll();
 
+	graph.addRelation("a", "b", 10);
 	graphView.addEdge(0, 1, 10);
 
 	return true;
 }
-
-
-
 
 
 void imgui_vertex_popup_confirm(std::string name, std::string weight, bool biderectional)
@@ -148,12 +148,14 @@ void imgui_vertex_popup_confirm(std::string name, std::string weight, bool bider
 
 	if (selected >= 0)
 	{
-		if (graphView.draft_circle_added) {
+		if (graphView.hasVertexDraft()) {
 			graphView.commitVertexDraft(name);
-		}		
+			graph.addVertex(name);
+		}
 
 		if (previousSelected >= 0) {
-			graphView.addEdge(selected, previousSelected, std::stof(weight));
+			graphView.addEdge(previousSelected, selected, std::stof(weight));
+			graph.addRelation(graphView.getCircles()[previousSelected]->name, graphView.getCircles()[selected]->name, std::stof(weight));
 		}
 	}
 }
@@ -162,7 +164,7 @@ void imgui_vertex_popup_close()
 {
 	graphView.unselectAll();
 
-	if (graphView.draft_circle_added) {
+	if (graphView.hasVertexDraft()) {
 		graphView.removeVertexDraft();
 	}
 }
@@ -187,18 +189,28 @@ bool loop()
 	// Set drawing color to black
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
-	for (const Circle& circle : graphView.getCircles())
+	for (const Circle* circle : graphView.getCircles())
 	{
-		render_circle(renderer, basis.loc_to_window_x(circle.x), basis.loc_to_window_y(circle.y), circle.radius * basis.get_scale());
-		render_text(renderer, font_small, circle.name, basis.loc_to_window_x(circle.x), basis.loc_to_window_y(circle.y), true);
+		render_circle(renderer, basis.loc_to_window_x(circle->x), basis.loc_to_window_y(circle->y), circle->radius * basis.get_scale());
+		render_text(renderer, font_small, circle->name, basis.loc_to_window_x(circle->x), basis.loc_to_window_y(circle->y), true);
 	}
 
 	for (const Edge& edge : graphView.getEdges())
 	{
+		SDL_Rect rect;
+		rect.x = basis.loc_to_window_x(edge.line.x2 - 5);
+		rect.y = basis.loc_to_window_y(edge.line.y2 + 5);
+		rect.w = basis.get_scale() * 10.0;
+		rect.h = basis.get_scale() * 10.0;
+
 		SDL_RenderDrawLine(
 			renderer,
 			basis.loc_to_window_x(edge.line.x1), basis.loc_to_window_y(edge.line.y1),
 			basis.loc_to_window_x(edge.line.x2), basis.loc_to_window_y(edge.line.y2)
+		);
+		SDL_RenderFillRect(
+			renderer,
+			&rect
 		);
 
 		render_text(renderer,
@@ -222,6 +234,8 @@ bool loop()
 	render_text(renderer, font, "y: " + std::to_string(mouse.y), 10, 10 + 40 * 2);
 	render_text(renderer, font, "local x: " + std::to_string(basis.window_to_loc_x(mouse.x)), 10, 10 + 40 * 3);
 	render_text(renderer, font, "local y: " + std::to_string(basis.window_to_loc_y(mouse.y)), 10, 10 + 40 * 4);
+	render_text(renderer, font, distance, 10, 10 + 40 * 5);
+	render_text(renderer, font, path, 10, 10 + 40 * 6);
 
 	if (graphView.selected >= 0)
 	{
@@ -243,13 +257,20 @@ bool loop()
 	return true;
 }
 
-void on_mouse_button_down()
+void on_left_mouse_button_down()
 {
 	if (vertexPopup.opened()) {
 		return;
 	}
 
-	graphView.tryToSelectByCoords(basis.window_to_loc_x(mouse.x), basis.window_to_loc_y(mouse.y));
+	int i = graphView.getCircleOnCoords(basis.window_to_loc_x(mouse.x), basis.window_to_loc_y(mouse.y));
+
+	if (i >= 0) {
+		graphView.select(i);
+	}
+	else {
+		graphView.select(i, false);
+	}
 
 	if (graphView.selected >= 0 && graphView.selected == graphView.previousSelected) {
 		return;
@@ -272,6 +293,60 @@ void on_mouse_button_down()
 	}
 }
 
+template <typename Range, typename Value = typename Range::value_type>
+std::string join(Range const& elements, const char* const delimiter) {
+	std::ostringstream os;
+	auto b = begin(elements), e = end(elements);
+
+	if (b != e) {
+		std::copy(b, prev(e), std::ostream_iterator<Value>(os, delimiter));
+		b = prev(e);
+	}
+	if (b != e) {
+		os << *b;
+	}
+
+	return os.str();
+}
+
+void on_right_mouse_button_down()
+{
+	int i = graphView.getCircleOnCoords(basis.window_to_loc_x(mouse.x), basis.window_to_loc_y(mouse.y));
+
+	if (i < 0) {
+		graphView.unselectAll();
+		return;
+	}
+
+	graphView.select(i);
+
+	if (graphView.selected >= 0 && graphView.selected == graphView.previousSelected) {
+		return;
+	}
+
+	if (graphView.selected >= 0 && graphView.previousSelected < 0) {
+		return;
+	}
+
+	std::string src = graphView.getPreviousSelectedCircle()->name;
+	std::string dest = graphView.getSelectedCircle()->name;
+
+	SearchResult res = graph._dijkstra(src, graphView.getCircles().size());
+	if (res.distances[dest] != FLT_MAX) {
+		distance = std::format("p({}, {}) = {:.1f}", src, dest, res.distances[dest]);
+		
+		path = src + " -> " + join(res.paths[dest], " -> ");
+	}
+	else {
+		distance = std::format("There is no path for ({}, {})", src, dest);
+		path = "";
+	}
+
+	printf("%s\n", distance.c_str());
+
+	graphView.unselectAll();
+}
+
 bool process_events()
 {
 	SDL_Event e;
@@ -284,7 +359,12 @@ bool process_events()
 		case SDL_QUIT:
 			return false;
 		case SDL_MOUSEBUTTONDOWN:
-			on_mouse_button_down();
+			if (e.button.button == 1) {
+				on_left_mouse_button_down();
+			}
+			else if (e.button.button == 3) {
+				on_right_mouse_button_down();
+			}
 			break;
 		case SDL_MOUSEMOTION:
 			mouse.x = e.button.x;

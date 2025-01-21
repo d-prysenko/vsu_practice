@@ -3,11 +3,16 @@
 #include <string>
 #include <set>
 
+#include "AdjacencyMatrix.h"
+
 class GraphRelations
 {
 public:
+	virtual void addVertex(std::string v1) = 0;
 	virtual bool hasVertex(std::string v1) = 0;
-	
+	virtual std::vector<std::string> getVerteces() = 0;
+
+	virtual void addRelation(std::string v1, std::string v2, float weight) = 0;
 	virtual bool hasRelation(std::string v1, std::string v2) = 0;
 	virtual bool hasRelation(size_t v1, size_t v2) = 0;
 
@@ -18,14 +23,36 @@ public:
 class GraphMatrixRelations : public GraphRelations
 {
 public:
+	virtual void addVertex(std::string v1)
+	{
+		mtx.addVertex(v1);
+	}
+
 	virtual bool hasVertex(std::string v1)
 	{
-		return 0;
+		return mtx.getVertices().contains(v1);
+	}
+
+	virtual std::vector<std::string> getVerteces()
+	{
+		std::vector<std::string> vertices;
+
+		for (const auto& v : mtx.getVertices())
+		{
+			vertices.push_back(v.first);
+		}
+
+		return vertices;
+	}
+
+	virtual void addRelation(std::string v1, std::string v2, float weight)
+	{
+		mtx.addRelation(v1, v2, weight);
 	}
 
 	virtual bool hasRelation(std::string v1, std::string v2)
 	{
-		return 0;
+		return mtx.hasRelation(v1, v2);
 	}
 
 	virtual bool hasRelation(size_t v1, size_t v2)
@@ -35,13 +62,16 @@ public:
 
 	virtual float getWeight(std::string v1, std::string v2)
 	{
-		return 0;
+		return mtx.getRelationWeight(v1, v2);
 	}
 
 	virtual float getWeight(size_t v1, size_t v2)
 	{
 		return 0;
 	}
+
+private:
+	AdjacencyMatrix mtx;
 };
 
 class GraphTreeRelations : public GraphRelations
@@ -64,7 +94,7 @@ public:
 	std::vector<GraphTreeNode*> trees;
 
 	std::set<std::string> _vertices;
-	
+
 	std::set<GraphTreeNode*> _nodes;
 
 	void _addVertex(std::string vName)

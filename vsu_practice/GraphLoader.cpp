@@ -19,7 +19,7 @@ Graph GraphLoader::fromFileAsVertexList(std::string filename)
 	// Чтение первой строки и разледение ее на вершины
 	while (std::getline(firstline, vertex, ' '))
 	{
-		mtx.addVertex(vertex);
+		mtx.addVertexManual(vertex);
 	}
 
 	mtx.initAdjMatrix();

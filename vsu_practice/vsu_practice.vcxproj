@@ -160,6 +160,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AdjacencyMatrix.h" />
     <ClInclude Include="Basis.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="GraphLoader.h" />

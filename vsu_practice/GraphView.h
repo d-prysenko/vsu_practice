@@ -94,27 +94,29 @@ public:
 	void addVertexDraft(float x, float y);
 	void removeVertexDraft();
 	void commitVertexDraft(std::string name);
+	bool hasVertexDraft();
+
 	void addEdge(float weight);
 	void addEdge(size_t from, size_t to, float weight);
 	void unselect();
 	void unselectAll();
-	void select(size_t i, bool single = true);
-	void tryToSelectByCoords(float x, float y);
+	void select(size_t i, bool with_resize = true);
+	int getCircleOnCoords(float x, float y);
 	bool hasEdge(int from, int to);
 
 	const std::vector<Edge>& getEdges();
-	const std::vector<Circle>& getCircles();
+	const std::vector<Circle*>& getCircles();
 
 	const Circle* getSelectedCircle();
 	const Circle* getPreviousSelectedCircle();
 
-	bool draft_circle_added = false;
 	int selected = -1;
 	int previousSelected = -1;
 
 private:
-	std::vector<Circle> circles;
+	std::vector<Circle*> circles;
 	std::vector<Edge> edges;
+	bool draft_circle_added = false;
 };
 
 

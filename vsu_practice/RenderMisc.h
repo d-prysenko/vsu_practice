@@ -41,14 +41,14 @@ void render_circle(SDL_Renderer* renderer, int32_t centreX, int32_t centreY, int
 	}
 }
 
-SDL_Rect dest;
-SDL_Color foreground = { 0, 0, 0 };
-
 void render_text(SDL_Renderer* renderer, TTF_Font* font, std::string str, int x, int y, bool centered = false)
 {
 	if (str == "") {
 		return;
 	}
+
+	SDL_Rect dest;
+	SDL_Color foreground = { 0, 0, 0 };
 
 	SDL_Surface* text_surf = TTF_RenderText_Solid(font, str.c_str(), foreground);
 

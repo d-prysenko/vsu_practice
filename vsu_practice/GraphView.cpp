@@ -56,7 +56,7 @@ Line get_line_between_circles(const Circle& circle1, const Circle& circle2)
 
 void GraphView::addVertexDraft(float x, float y)
 {
-	circles.push_back(Circle(x, y, SELECTED_RADUIS));
+	circles.push_back(new Circle(x, y, SELECTED_RADUIS));
 	draft_circle_added = true;
 	selected = circles.size() - 1;
 }
@@ -71,17 +71,22 @@ void GraphView::commitVertexDraft(std::string name)
 {
 	draft_circle_added = false;
 
-	circles.back().name = name;
+	circles.back()->name = name;
+}
+
+bool GraphView::hasVertexDraft()
+{
+	return draft_circle_added;
 }
 
 void GraphView::addEdge(float weight)
 {
-	edges.push_back(Edge(&circles[previousSelected], &circles[selected], weight));
+	edges.push_back(Edge(circles[previousSelected], circles[selected], weight));
 }
 
 void GraphView::addEdge(size_t from, size_t to, float weight)
 {
-	edges.push_back(Edge(&circles[from], &circles[to], weight));
+	edges.push_back(Edge(circles[from], circles[to], weight));
 }
 
 void GraphView::unselect()
@@ -91,47 +96,44 @@ void GraphView::unselect()
 	}
 
 	previousSelected = selected;
-	circles[previousSelected].radius = DEFAULT_RADUIS;
+	circles[previousSelected]->radius = DEFAULT_RADUIS;
 	selected = -1;
 }
 
 void GraphView::unselectAll()
 {
 	if (previousSelected >= 0) {
-		circles[previousSelected].radius = DEFAULT_RADUIS;
+		circles[previousSelected]->radius = DEFAULT_RADUIS;
 	}
 
 	if (selected >= 0) {
-		circles[selected].radius = DEFAULT_RADUIS;
+		circles[selected]->radius = DEFAULT_RADUIS;
 	}
 
 	selected = previousSelected = -1;
 }
 
-void GraphView::select(size_t i, bool single)
+void GraphView::select(size_t i, bool with_resize)
 {
-	if (single) {
-		unselect();
-	}
-
 	previousSelected = selected;
 	selected = i;
-	circles[selected].radius = SELECTED_RADUIS;
+
+	if (with_resize) {
+		circles[selected]->radius = SELECTED_RADUIS;
+	}
 }
 
-void GraphView::tryToSelectByCoords(float x, float y)
+int GraphView::getCircleOnCoords(float x, float y)
 {
-	previousSelected = selected;
-	selected = -1;
-
-	for (int i = 0; i < circles.size() && selected < 0; i++)
+	for (int i = 0; i < circles.size(); i++)
 	{
-		if ((x - circles[i].x) * (x - circles[i].x) + (y - circles[i].y) * (y - circles[i].y) < (circles[i].radius + 20) * (circles[i].radius + 20))
+		if ((x - circles[i]->x) * (x - circles[i]->x) + (y - circles[i]->y) * (y - circles[i]->y) < (circles[i]->radius + 20) * (circles[i]->radius + 20))
 		{
-			circles[i].radius = SELECTED_RADUIS;
-			selected = i;
+			return i;
 		}
 	}
+
+	return -1;
 }
 
 bool GraphView::hasEdge(int from, int to)
@@ -142,8 +144,8 @@ bool GraphView::hasEdge(int from, int to)
 
 	for (const Edge& edge : edges)
 	{
-		if (edge.from == &circles[from] && edge.to == &circles[to] ||
-			edge.from == &circles[to] && edge.to == &circles[from]) {
+		if (edge.from == circles[from] && edge.to == circles[to] ||
+			edge.from == circles[to] && edge.to == circles[from]) {
 			return true;
 		}
 	}
@@ -156,7 +158,7 @@ const std::vector<Edge>& GraphView::getEdges()
 	return edges;
 }
 
-const std::vector<Circle>& GraphView::getCircles()
+const std::vector<Circle*>& GraphView::getCircles()
 {
 	return circles;
 }
@@ -167,7 +169,7 @@ const Circle* GraphView::getSelectedCircle()
 		return nullptr;
 	}
 
-	return &circles[selected];
+	return circles[selected];
 }
 
 const Circle* GraphView::getPreviousSelectedCircle()
@@ -176,5 +178,5 @@ const Circle* GraphView::getPreviousSelectedCircle()
 		return nullptr;
 	}
 
-	return &circles[previousSelected];
+	return circles[previousSelected];
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "Graph.h"
+#include "AdjacencyMatrix.h"
 
 class GraphLoader
 {

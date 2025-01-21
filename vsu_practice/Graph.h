@@ -20,18 +20,23 @@
 #endif
 
 
-struct SearchResult
+
+struct VertexTrace
 {
-	SearchResult()
+	VertexTrace()
+		: distance(0), path({})
 	{ }
 
-	SearchResult(std::map<std::string, float> distances, std::map<std::string, std::vector<std::string>> paths)
-		: distances(distances), paths(paths)
+	VertexTrace(float distance, std::vector<std::string> path)
+		: distance(distance), path(path)
 	{ }
 
-	std::map<std::string, float> distances;
-	std::map<std::string, std::vector<std::string>> paths;
+	float distance;
+	std::vector<std::string> path;
 };
+
+
+typedef std::map<std::string, VertexTrace> VertexTraces;
 
 
 class Graph
@@ -52,21 +57,14 @@ public:
 	void addVertex(std::string vName);
 	void addRelation(std::string v1, std::string v2, float weight);
 
-	SearchResult _dijkstra(std::string src, size_t order);
+	VertexTraces getDistancesFrom(std::string src);
+	VertexTrace getDistanceTo(std::string src, std::string dest);
+
 private:
 	
-	uint8_t error = 0;
-	size_t _order = 0;
-	float _radius = -1;
-	float _diameter = -1;
-	std::map<std::string, float> _eccentricities;
-	//std::map<std::string, size_t> _vertices;
-	//Matrix<float> _adjacencyMatrix;
+	VertexTraces _dijkstra(std::string src);
 
-	GraphRelations* graphRel = new GraphMatrixRelations();
-
-
-	std::string _getVertexAliasById(size_t src);
+	GraphRelations* mGraphRel = new GraphMatrixRelations();
 
 };
 

@@ -11,6 +11,7 @@ public:
 	virtual void addVertex(std::string v1) = 0;
 	virtual bool hasVertex(std::string v1) = 0;
 	virtual std::vector<std::string> getVerteces() = 0;
+	virtual size_t getOrder() = 0;
 
 	virtual void addRelation(std::string v1, std::string v2, float weight) = 0;
 	virtual bool hasRelation(std::string v1, std::string v2) = 0;
@@ -43,6 +44,11 @@ public:
 		}
 
 		return vertices;
+	}
+
+	virtual size_t getOrder()
+	{
+		return mtx.getVerticesCount();
 	}
 
 	virtual void addRelation(std::string v1, std::string v2, float weight)

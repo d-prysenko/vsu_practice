@@ -331,11 +331,11 @@ void on_right_mouse_button_down()
 	std::string src = graphView.getPreviousSelectedCircle()->name;
 	std::string dest = graphView.getSelectedCircle()->name;
 
-	SearchResult res = graph._dijkstra(src, graphView.getCircles().size());
-	if (res.distances[dest] != FLT_MAX) {
-		distance = std::format("p({}, {}) = {:.1f}", src, dest, res.distances[dest]);
+	VertexTrace res = graph.getDistanceTo(src, dest);
+	if (res.distance != FLT_MAX) {
+		distance = std::format("p({}, {}) = {:.1f}", src, dest, res.distance);
 		
-		path = src + " -> " + join(res.paths[dest], " -> ");
+		path = src + " -> " + join(res.path, " -> ");
 	}
 	else {
 		distance = std::format("There is no path for ({}, {})", src, dest);

@@ -1,19 +1,19 @@
-#include "imgui_popup.h"
+#include "ImguiVertexAddingPopup.h"
 
 
 
-void ImguiPopup::open()
+void ImguiVertexAddingPopup::open()
 {
 	_show = true;
 	_name = std::to_string(_id);
 }
 
-void ImguiPopup::close()
+void ImguiVertexAddingPopup::close()
 {
 	_show = false;
 }
 
-void ImguiPopup::render(bool with_edge, void(*close_callback)(), void(*confirm_callback)(std::string name, std::string weight, bool biderectional))
+void ImguiVertexAddingPopup::render(bool with_edge, void(*close_callback)(), void(*confirm_callback)(std::string name, std::string weight, bool biderectional))
 {
 	if (_show) {
 		ImGui::Begin("Vertex creating", &_show);
@@ -42,7 +42,7 @@ void ImguiPopup::render(bool with_edge, void(*close_callback)(), void(*confirm_c
 	}
 }
 
-bool ImguiPopup::opened()
+bool ImguiVertexAddingPopup::opened()
 {
 	return _show;
 }

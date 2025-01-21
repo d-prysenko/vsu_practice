@@ -5,7 +5,7 @@
 #include "imgui_impl_sdlrenderer2.h"
 #include "imgui_stdlib.h"
 
-class ImguiPopup
+class ImguiVertexAddingPopup
 {
 public:
 	void open();

@@ -1,20 +1,20 @@
 #include <iostream>
 #include <vector>
 #include <format>
-#include "Graph.h"
-#include "GraphLoader.h"
-#include "GraphPrinter.hpp"
+#include "graph/Graph.h"
+#include "graph/GraphLoader.h"
+#include "graph/GraphPrinter.hpp"
 #include "Basis.h"
 #include "Mouse.h"
-#include "RenderMisc.h"
-#include "GraphView.h"
+#include "gui/GraphView.h"
 
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
 #include "imgui_stdlib.h"
 
-#include "imgui_popup.h"
+#include "gui/RenderMisc.h"
+#include "gui/ImguiVertexAddingPopup.h"
 
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -25,6 +25,10 @@ bool init();
 void kill();
 bool loop();
 bool process_events();
+
+void on_mouse_wheel(const SDL_Event& e);
+void on_mouse_motion(const SDL_Event& e);
+void on_mouse_button_down(const SDL_Event& e);
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -41,7 +45,7 @@ GraphView graphView;
 Basis basis(WINDOW_WIDTH, WINDOW_HEIGHT);
 Mouse mouse;
 
-ImguiPopup vertexPopup;
+ImguiVertexAddingPopup vertexPopup;
 
 ImGuiIO* io;
 
@@ -221,14 +225,6 @@ bool loop()
 		);
 	}
 
-	//Line l = get_line_between_circles(circles[0], circles[1]);
-
-	//SDL_RenderDrawLine(
-	//	renderer,
-	//	basis.loc_to_window_x(l.x1), basis.loc_to_window_y(l.y1),
-	//	basis.loc_to_window_x(l.x2), basis.loc_to_window_y(l.y2)
-	//);
-
 	render_text(renderer, font, std::to_string(basis.get_scale()), 10, 10);
 	render_text(renderer, font, "x: " + std::to_string(mouse.x), 10, 10 + 40 * 1);
 	render_text(renderer, font, "y: " + std::to_string(mouse.y), 10, 10 + 40 * 2);
@@ -359,38 +355,58 @@ bool process_events()
 		case SDL_QUIT:
 			return false;
 		case SDL_MOUSEBUTTONDOWN:
-			if (e.button.button == 1) {
-				on_left_mouse_button_down();
-			}
-			else if (e.button.button == 3) {
-				on_right_mouse_button_down();
-			}
+			on_mouse_button_down(e);
 			break;
 		case SDL_MOUSEMOTION:
-			mouse.x = e.button.x;
-			mouse.y = e.button.y;
+			on_mouse_motion(e);
 			break;
 		case SDL_MOUSEWHEEL:
-			if (e.wheel.y > 0) {
-				basis.scale_up(mouse.x, mouse.y);
-				TTF_SetFontSize(font_small, 22 * basis.get_scale());
-			}
-			else {
-				basis.scale_down(mouse.x, mouse.y);
-				TTF_SetFontSize(font_small, 22 * basis.get_scale());
-			}
+			on_mouse_wheel(e);
 		}
 	}
 
 	return true;
 }
 
+void on_mouse_wheel(const SDL_Event& e)
+{
+	if (e.wheel.y > 0) {
+		basis.scale_up(mouse.x, mouse.y);
+		TTF_SetFontSize(font_small, 22 * basis.get_scale());
+	}
+	else {
+		basis.scale_down(mouse.x, mouse.y);
+		TTF_SetFontSize(font_small, 22 * basis.get_scale());
+	}
+}
+
+void on_mouse_motion(const SDL_Event& e)
+{
+	mouse.x = e.button.x;
+	mouse.y = e.button.y;
+}
+
+void on_mouse_button_down(const SDL_Event& e)
+{
+	if (e.button.button == 1) {
+		on_left_mouse_button_down();
+	}
+	else if (e.button.button == 3) {
+		on_right_mouse_button_down();
+	}
+}
+
 
 void kill() {
 	// Quit
+	ImGui_ImplSDLRenderer2_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+
 	TTF_CloseFont(font_small);
 	TTF_CloseFont(font);
 	TTF_Quit();
+
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

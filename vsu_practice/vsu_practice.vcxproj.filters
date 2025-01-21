@@ -13,130 +13,136 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="imgui">
+    <Filter Include="gui">
+      <UniqueIdentifier>{ff3db701-d0b1-4d0b-9a38-3fef326484da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\imgui">
       <UniqueIdentifier>{6e1792ac-b94c-4a9f-b71a-109bdfe368f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graph">
+      <UniqueIdentifier>{5626638e-57f9-4263-b0c8-f33c6549e16d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Graph.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="gui\imgui\imgui.cpp">
+      <Filter>gui\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="GraphLoader.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="gui\imgui\imgui_demo.cpp">
+      <Filter>gui\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\imgui.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="gui\imgui\imgui_draw.cpp">
+      <Filter>gui\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\imgui_demo.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="gui\imgui\imgui_impl_sdl2.cpp">
+      <Filter>gui\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\imgui_draw.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="gui\imgui\imgui_impl_sdlrenderer2.cpp">
+      <Filter>gui\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\imgui_impl_sdl2.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="gui\imgui\imgui_stdlib.cpp">
+      <Filter>gui\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\imgui_impl_sdlrenderer2.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="gui\imgui\imgui_tables.cpp">
+      <Filter>gui\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\imgui_stdlib.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="gui\imgui\imgui_widgets.cpp">
+      <Filter>gui\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\imgui_tables.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="gui\ImguiVertexAddingPopup.cpp">
+      <Filter>gui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\imgui_widgets.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="graph\Graph.cpp">
+      <Filter>graph</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_popup.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="graph\GraphLoader.cpp">
+      <Filter>graph</Filter>
     </ClCompile>
-    <ClCompile Include="GraphView.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphView.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="gui\GraphView.cpp">
+      <Filter>gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Graph.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphPrinter.hpp">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphLoader.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphRelations.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Basis.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Mouse.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="RenderMisc.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="gui\imgui\imconfig.h">
+      <Filter>gui\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\imconfig.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="gui\imgui\imgui.h">
+      <Filter>gui\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\imgui.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="gui\imgui\imgui_impl_sdl2.h">
+      <Filter>gui\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\imgui_impl_sdl2.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="gui\imgui\imgui_impl_sdlrenderer2.h">
+      <Filter>gui\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\imgui_impl_sdlrenderer2.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="gui\imgui\imgui_internal.h">
+      <Filter>gui\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\imgui_internal.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="gui\imgui\imgui_stdlib.h">
+      <Filter>gui\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\imgui_stdlib.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="gui\imgui\imstb_rectpack.h">
+      <Filter>gui\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\imstb_rectpack.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="gui\imgui\imstb_textedit.h">
+      <Filter>gui\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\imstb_textedit.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="gui\imgui\imstb_truetype.h">
+      <Filter>gui\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\imstb_truetype.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="gui\ImguiVertexAddingPopup.h">
+      <Filter>gui</Filter>
     </ClInclude>
-    <ClInclude Include="imgui_popup.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="graph\AdjacencyMatrix.h">
+      <Filter>graph</Filter>
     </ClInclude>
-    <ClInclude Include="AdjacencyMatrix.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="graph\Graph.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\GraphLoader.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\GraphPrinter.hpp">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\GraphRelations.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\RenderMisc.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\GraphView.h">
+      <Filter>gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="graph1.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
-    <Text Include="graph2.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
-    <Text Include="graph3.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
-    <Text Include="graph4.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
+    <None Include="gui\imgui\imgui.gdb">
+      <Filter>gui\imgui</Filter>
+    </None>
+    <None Include="gui\imgui\imgui.natstepfilter">
+      <Filter>gui\imgui</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="gui\imgui.gdb">
-      <Filter>imgui</Filter>
-    </None>
-    <None Include="gui\imgui.natstepfilter">
-      <Filter>imgui</Filter>
-    </None>
+    <Text Include="res\graph1.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="res\graph2.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="res\graph3.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="res\graph4.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
 </Project>

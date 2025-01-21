@@ -78,9 +78,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\repos\include\SDL2;D:\repos\vsu_practice\vsu_practice\gui;$(IncludePath)</IncludePath>
+    <IncludePath>D:\repos\include\SDL2;D:\repos\vsu_practice\vsu_practice\gui\imgui;$(IncludePath)</IncludePath>
     <LibraryPath>D:\repos\lib;$(LibraryPath)</LibraryPath>
-    <SourcePath>D:\repos\vsu_practice\vsu_practice\gui;$(SourcePath)</SourcePath>
+    <SourcePath>D:\repos\vsu_practice\vsu_practice\gui\imgui;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -144,50 +144,50 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Graph.cpp" />
-    <ClCompile Include="GraphLoader.cpp" />
-    <ClCompile Include="GraphView.cpp" />
-    <ClCompile Include="GraphView.h" />
-    <ClCompile Include="gui\imgui.cpp" />
-    <ClCompile Include="gui\imgui_demo.cpp" />
-    <ClCompile Include="gui\imgui_draw.cpp" />
-    <ClCompile Include="gui\imgui_impl_sdl2.cpp" />
-    <ClCompile Include="gui\imgui_impl_sdlrenderer2.cpp" />
-    <ClCompile Include="gui\imgui_stdlib.cpp" />
-    <ClCompile Include="gui\imgui_tables.cpp" />
-    <ClCompile Include="gui\imgui_widgets.cpp" />
-    <ClCompile Include="imgui_popup.cpp" />
+    <ClCompile Include="graph\Graph.cpp" />
+    <ClCompile Include="graph\GraphLoader.cpp" />
+    <ClCompile Include="gui\GraphView.cpp" />
+    <ClCompile Include="gui\ImguiVertexAddingPopup.cpp" />
+    <ClCompile Include="gui\imgui\imgui.cpp" />
+    <ClCompile Include="gui\imgui\imgui_demo.cpp" />
+    <ClCompile Include="gui\imgui\imgui_draw.cpp" />
+    <ClCompile Include="gui\imgui\imgui_impl_sdl2.cpp" />
+    <ClCompile Include="gui\imgui\imgui_impl_sdlrenderer2.cpp" />
+    <ClCompile Include="gui\imgui\imgui_stdlib.cpp" />
+    <ClCompile Include="gui\imgui\imgui_tables.cpp" />
+    <ClCompile Include="gui\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AdjacencyMatrix.h" />
     <ClInclude Include="Basis.h" />
-    <ClInclude Include="Graph.h" />
-    <ClInclude Include="GraphLoader.h" />
-    <ClInclude Include="GraphPrinter.hpp" />
-    <ClInclude Include="GraphRelations.h" />
-    <ClInclude Include="gui\imconfig.h" />
-    <ClInclude Include="gui\imgui.h" />
-    <ClInclude Include="gui\imgui_impl_sdl2.h" />
-    <ClInclude Include="gui\imgui_impl_sdlrenderer2.h" />
-    <ClInclude Include="gui\imgui_internal.h" />
-    <ClInclude Include="gui\imgui_stdlib.h" />
-    <ClInclude Include="gui\imstb_rectpack.h" />
-    <ClInclude Include="gui\imstb_textedit.h" />
-    <ClInclude Include="gui\imstb_truetype.h" />
-    <ClInclude Include="imgui_popup.h" />
+    <ClInclude Include="graph\AdjacencyMatrix.h" />
+    <ClInclude Include="graph\Graph.h" />
+    <ClInclude Include="graph\GraphLoader.h" />
+    <ClInclude Include="graph\GraphPrinter.hpp" />
+    <ClInclude Include="graph\GraphRelations.h" />
+    <ClInclude Include="gui\GraphView.h" />
+    <ClInclude Include="gui\ImguiVertexAddingPopup.h" />
+    <ClInclude Include="gui\imgui\imconfig.h" />
+    <ClInclude Include="gui\imgui\imgui.h" />
+    <ClInclude Include="gui\imgui\imgui_impl_sdl2.h" />
+    <ClInclude Include="gui\imgui\imgui_impl_sdlrenderer2.h" />
+    <ClInclude Include="gui\imgui\imgui_internal.h" />
+    <ClInclude Include="gui\imgui\imgui_stdlib.h" />
+    <ClInclude Include="gui\imgui\imstb_rectpack.h" />
+    <ClInclude Include="gui\imgui\imstb_textedit.h" />
+    <ClInclude Include="gui\imgui\imstb_truetype.h" />
+    <ClInclude Include="gui\RenderMisc.h" />
     <ClInclude Include="Mouse.h" />
-    <ClInclude Include="RenderMisc.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="graph1.txt" />
-    <Text Include="graph2.txt" />
-    <Text Include="graph3.txt" />
-    <Text Include="graph4.txt" />
+    <None Include="gui\imgui\imgui.gdb" />
+    <None Include="gui\imgui\imgui.natstepfilter" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="gui\imgui.gdb" />
-    <None Include="gui\imgui.natstepfilter" />
+    <Text Include="res\graph1.txt" />
+    <Text Include="res\graph2.txt" />
+    <Text Include="res\graph3.txt" />
+    <Text Include="res\graph4.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

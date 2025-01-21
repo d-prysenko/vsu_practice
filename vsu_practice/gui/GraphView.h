@@ -93,11 +93,13 @@ class GraphView
 public:
 	void addVertexDraft(float x, float y);
 	void removeVertexDraft();
-	void commitVertexDraft(std::string name);
+	const Circle* commitVertexDraft(std::string name);
 	bool hasVertexDraft();
+	const Circle* getVertexDraft();
 
 	void addEdge(float weight);
 	void addEdge(size_t from, size_t to, float weight);
+	void addEdge(const Circle* from, const Circle* to, float weight);
 	void unselect();
 	void unselectAll();
 	void select(size_t i, bool with_resize = true);
@@ -109,14 +111,15 @@ public:
 
 	const Circle* getSelectedCircle();
 	const Circle* getPreviousSelectedCircle();
+	bool hasCorrectPreviusSelectedCirlce();
 
 	int selected = -1;
 	int previousSelected = -1;
 
 private:
-	std::vector<Circle*> circles;
-	std::vector<Edge> edges;
-	bool draft_circle_added = false;
+	std::vector<Circle*> mCircles;
+	std::vector<Edge> mEdges;
+	Circle* mCircleDraft = nullptr;
 };
 
 

@@ -51,9 +51,6 @@
     <ClCompile Include="gui\imgui\imgui_widgets.cpp">
       <Filter>gui\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\ImguiVertexAddingPopup.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
     <ClCompile Include="graph\Graph.cpp">
       <Filter>graph</Filter>
     </ClCompile>
@@ -98,9 +95,6 @@
     <ClInclude Include="gui\imgui\imstb_truetype.h">
       <Filter>gui\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\ImguiVertexAddingPopup.h">
-      <Filter>gui</Filter>
-    </ClInclude>
     <ClInclude Include="graph\AdjacencyMatrix.h">
       <Filter>graph</Filter>
     </ClInclude>
@@ -124,6 +118,12 @@
     </ClInclude>
     <ClInclude Include="StringHelper.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\ImguiRelationAddingPopup.hpp">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\ImguiPopup.hpp">
+      <Filter>gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

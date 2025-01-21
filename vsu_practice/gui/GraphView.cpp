@@ -56,37 +56,51 @@ Line get_line_between_circles(const Circle& circle1, const Circle& circle2)
 
 void GraphView::addVertexDraft(float x, float y)
 {
-	circles.push_back(new Circle(x, y, SELECTED_RADUIS));
-	draft_circle_added = true;
-	selected = circles.size() - 1;
+	mCircleDraft = new Circle(x, y, SELECTED_RADUIS);
 }
 
 void GraphView::removeVertexDraft()
 {
-	circles.pop_back();
-	draft_circle_added = false;
+	delete mCircleDraft;
+	mCircleDraft = nullptr;
 }
 
-void GraphView::commitVertexDraft(std::string name)
+const Circle* GraphView::commitVertexDraft(std::string name)
 {
-	draft_circle_added = false;
+	mCircleDraft->name = name;
+	mCircleDraft->radius = DEFAULT_RADUIS;
+	mCircles.push_back(mCircleDraft);
 
-	circles.back()->name = name;
+	//select(mCircles.size() - 1, false);
+
+	mCircleDraft = nullptr;
+
+	return mCircles.back();
 }
 
 bool GraphView::hasVertexDraft()
 {
-	return draft_circle_added;
+	return mCircleDraft != nullptr;
+}
+
+const Circle* GraphView::getVertexDraft()
+{
+	return mCircleDraft;
 }
 
 void GraphView::addEdge(float weight)
 {
-	edges.push_back(Edge(circles[previousSelected], circles[selected], weight));
+	mEdges.push_back(Edge(mCircles[previousSelected], mCircles[selected], weight));
+}
+
+void GraphView::addEdge(const Circle* from, const Circle* to, float weight)
+{
+	mEdges.push_back(Edge(from, to, weight));
 }
 
 void GraphView::addEdge(size_t from, size_t to, float weight)
 {
-	edges.push_back(Edge(circles[from], circles[to], weight));
+	mEdges.push_back(Edge(mCircles[from], mCircles[to], weight));
 }
 
 void GraphView::unselect()
@@ -96,18 +110,18 @@ void GraphView::unselect()
 	}
 
 	previousSelected = selected;
-	circles[previousSelected]->radius = DEFAULT_RADUIS;
+	mCircles[previousSelected]->radius = DEFAULT_RADUIS;
 	selected = -1;
 }
 
 void GraphView::unselectAll()
 {
 	if (previousSelected >= 0) {
-		circles[previousSelected]->radius = DEFAULT_RADUIS;
+		mCircles[previousSelected]->radius = DEFAULT_RADUIS;
 	}
 
 	if (selected >= 0) {
-		circles[selected]->radius = DEFAULT_RADUIS;
+		mCircles[selected]->radius = DEFAULT_RADUIS;
 	}
 
 	selected = previousSelected = -1;
@@ -119,15 +133,15 @@ void GraphView::select(size_t i, bool with_resize)
 	selected = i;
 
 	if (with_resize) {
-		circles[selected]->radius = SELECTED_RADUIS;
+		mCircles[selected]->radius = SELECTED_RADUIS;
 	}
 }
 
 int GraphView::getCircleOnCoords(float x, float y)
 {
-	for (int i = 0; i < circles.size(); i++)
+	for (int i = 0; i < mCircles.size(); i++)
 	{
-		if ((x - circles[i]->x) * (x - circles[i]->x) + (y - circles[i]->y) * (y - circles[i]->y) < (circles[i]->radius + 20) * (circles[i]->radius + 20))
+		if ((x - mCircles[i]->x) * (x - mCircles[i]->x) + (y - mCircles[i]->y) * (y - mCircles[i]->y) < (mCircles[i]->radius + 20) * (mCircles[i]->radius + 20))
 		{
 			return i;
 		}
@@ -142,10 +156,10 @@ bool GraphView::hasEdge(int from, int to)
 		return false;
 	}
 
-	for (const Edge& edge : edges)
+	for (const Edge& edge : mEdges)
 	{
-		if (edge.from == circles[from] && edge.to == circles[to] ||
-			edge.from == circles[to] && edge.to == circles[from]) {
+		if (edge.from == mCircles[from] && edge.to == mCircles[to] ||
+			edge.from == mCircles[to] && edge.to == mCircles[from]) {
 			return true;
 		}
 	}
@@ -155,12 +169,12 @@ bool GraphView::hasEdge(int from, int to)
 
 const std::vector<Edge>& GraphView::getEdges()
 {
-	return edges;
+	return mEdges;
 }
 
 const std::vector<Circle*>& GraphView::getCircles()
 {
-	return circles;
+	return mCircles;
 }
 
 const Circle* GraphView::getSelectedCircle()
@@ -169,7 +183,7 @@ const Circle* GraphView::getSelectedCircle()
 		return nullptr;
 	}
 
-	return circles[selected];
+	return mCircles[selected];
 }
 
 const Circle* GraphView::getPreviousSelectedCircle()
@@ -178,5 +192,20 @@ const Circle* GraphView::getPreviousSelectedCircle()
 		return nullptr;
 	}
 
-	return circles[previousSelected];
+	return mCircles[previousSelected];
+}
+
+bool GraphView::hasCorrectPreviusSelectedCirlce()
+{
+
+
+	if (selected >= 0 && selected == previousSelected) {
+		return false;
+	}
+
+	if (selected >= 0 && previousSelected < 0) {
+		return false;
+	}
+
+	return true;
 }

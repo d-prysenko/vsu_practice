@@ -147,7 +147,6 @@
     <ClCompile Include="graph\Graph.cpp" />
     <ClCompile Include="graph\GraphLoader.cpp" />
     <ClCompile Include="gui\GraphView.cpp" />
-    <ClCompile Include="gui\ImguiVertexAddingPopup.cpp" />
     <ClCompile Include="gui\imgui\imgui.cpp" />
     <ClCompile Include="gui\imgui\imgui_demo.cpp" />
     <ClCompile Include="gui\imgui\imgui_draw.cpp" />
@@ -166,7 +165,8 @@
     <ClInclude Include="graph\GraphPrinter.hpp" />
     <ClInclude Include="graph\GraphRelations.h" />
     <ClInclude Include="gui\GraphView.h" />
-    <ClInclude Include="gui\ImguiVertexAddingPopup.h" />
+    <ClInclude Include="gui\ImguiPopup.hpp" />
+    <ClInclude Include="gui\ImguiRelationAddingPopup.hpp" />
     <ClInclude Include="gui\imgui\imconfig.h" />
     <ClInclude Include="gui\imgui\imgui.h" />
     <ClInclude Include="gui\imgui\imgui_impl_sdl2.h" />

@@ -178,6 +178,7 @@
     <ClInclude Include="gui\imgui\imstb_truetype.h" />
     <ClInclude Include="gui\RenderMisc.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="StringHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gui\imgui\imgui.gdb" />

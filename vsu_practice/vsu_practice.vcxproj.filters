@@ -122,6 +122,9 @@
     <ClInclude Include="gui\GraphView.h">
       <Filter>gui</Filter>
     </ClInclude>
+    <ClInclude Include="StringHelper.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gui\imgui\imgui.gdb">

@@ -6,7 +6,6 @@
 #include "graph/GraphPrinter.hpp"
 #include "Basis.h"
 #include "Mouse.h"
-#include "gui/GraphView.h"
 
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
@@ -15,6 +14,8 @@
 
 #include "gui/RenderMisc.h"
 #include "gui/ImguiVertexAddingPopup.h"
+#include "gui/GraphView.h"
+#include "StringHelper.h"
 
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -26,9 +27,18 @@ void kill();
 bool loop();
 bool process_events();
 
+void render_graph();
+void render_info();
+
 void on_mouse_wheel(const SDL_Event& e);
 void on_mouse_motion(const SDL_Event& e);
 void on_mouse_button_down(const SDL_Event& e);
+
+void on_left_mouse_button_down();
+void on_right_mouse_button_down();
+
+void on_confirm_vertex_adding_popup(std::string name, std::string weight, bool biderectional);
+void on_close_vertex_adding_popup();
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -143,7 +153,37 @@ bool init() {
 }
 
 
-void imgui_vertex_popup_confirm(std::string name, std::string weight, bool biderectional)
+bool loop()
+{
+	if (!process_events()) {
+		return false;
+	}
+
+	ImGui_ImplSDLRenderer2_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
+	ImGui::NewFrame();
+
+	// Clear the window to white
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	SDL_RenderClear(renderer);
+
+	// Set drawing color to black
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+	vertexPopup.render(graphView.previousSelected >= 0, on_close_vertex_adding_popup, on_confirm_vertex_adding_popup);
+
+	render_graph();
+
+	render_info();
+
+	ImGui::Render();
+	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
+	SDL_RenderPresent(renderer);
+
+	return true;
+}
+
+void on_confirm_vertex_adding_popup(std::string name, std::string weight, bool biderectional)
 {
 	int selected = graphView.selected;
 	int previousSelected = graphView.previousSelected;
@@ -164,7 +204,7 @@ void imgui_vertex_popup_confirm(std::string name, std::string weight, bool bider
 	}
 }
 
-void imgui_vertex_popup_close()
+void on_close_vertex_adding_popup()
 {
 	graphView.unselectAll();
 
@@ -173,26 +213,8 @@ void imgui_vertex_popup_close()
 	}
 }
 
-bool loop()
+void render_graph()
 {
-	if (!process_events()) {
-		return false;
-	}
-
-
-	ImGui_ImplSDLRenderer2_NewFrame();
-	ImGui_ImplSDL2_NewFrame();
-	ImGui::NewFrame();
-
-	vertexPopup.render(graphView.previousSelected >= 0, imgui_vertex_popup_close, imgui_vertex_popup_confirm);
-
-	// Clear the window to white
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	SDL_RenderClear(renderer);
-
-	// Set drawing color to black
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-
 	for (const Circle* circle : graphView.getCircles())
 	{
 		render_circle(renderer, basis.loc_to_window_x(circle->x), basis.loc_to_window_y(circle->y), circle->radius * basis.get_scale());
@@ -224,7 +246,10 @@ bool loop()
 			basis.loc_to_window_y((edge.line.y1 + edge.line.y2) / 2.0)
 		);
 	}
+}
 
+void render_info()
+{
 	render_text(renderer, font, std::to_string(basis.get_scale()), 10, 10);
 	render_text(renderer, font, "x: " + std::to_string(mouse.x), 10, 10 + 40 * 1);
 	render_text(renderer, font, "y: " + std::to_string(mouse.y), 10, 10 + 40 * 2);
@@ -245,102 +270,6 @@ bool loop()
 			10, 940
 		);
 	}
-
-	ImGui::Render();
-	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
-	SDL_RenderPresent(renderer);
-
-	return true;
-}
-
-void on_left_mouse_button_down()
-{
-	if (vertexPopup.opened()) {
-		return;
-	}
-
-	int i = graphView.getCircleOnCoords(basis.window_to_loc_x(mouse.x), basis.window_to_loc_y(mouse.y));
-
-	if (i >= 0) {
-		graphView.select(i);
-	}
-	else {
-		graphView.select(i, false);
-	}
-
-	if (graphView.selected >= 0 && graphView.selected == graphView.previousSelected) {
-		return;
-	}
-
-	if (graphView.selected >= 0 && graphView.previousSelected < 0) {
-		return;
-	}
-
-	if (graphView.hasEdge(graphView.previousSelected, graphView.selected)) {
-		graphView.unselectAll();
-		return;
-	}
-
-	vertexPopup.open();
-
-	if (graphView.selected < 0)
-	{
-		graphView.addVertexDraft(basis.window_to_loc_x(mouse.x), basis.window_to_loc_y(mouse.y));
-	}
-}
-
-template <typename Range, typename Value = typename Range::value_type>
-std::string join(Range const& elements, const char* const delimiter) {
-	std::ostringstream os;
-	auto b = begin(elements), e = end(elements);
-
-	if (b != e) {
-		std::copy(b, prev(e), std::ostream_iterator<Value>(os, delimiter));
-		b = prev(e);
-	}
-	if (b != e) {
-		os << *b;
-	}
-
-	return os.str();
-}
-
-void on_right_mouse_button_down()
-{
-	int i = graphView.getCircleOnCoords(basis.window_to_loc_x(mouse.x), basis.window_to_loc_y(mouse.y));
-
-	if (i < 0) {
-		graphView.unselectAll();
-		return;
-	}
-
-	graphView.select(i);
-
-	if (graphView.selected >= 0 && graphView.selected == graphView.previousSelected) {
-		return;
-	}
-
-	if (graphView.selected >= 0 && graphView.previousSelected < 0) {
-		return;
-	}
-
-	std::string src = graphView.getPreviousSelectedCircle()->name;
-	std::string dest = graphView.getSelectedCircle()->name;
-
-	VertexTrace res = graph.getDistanceTo(src, dest);
-	if (res.distance != FLT_MAX) {
-		distance = std::format("p({}, {}) = {:.1f}", src, dest, res.distance);
-		
-		path = src + " -> " + join(res.path, " -> ");
-	}
-	else {
-		distance = std::format("There is no path for ({}, {})", src, dest);
-		path = "";
-	}
-
-	printf("%s\n", distance.c_str());
-
-	graphView.unselectAll();
 }
 
 bool process_events()
@@ -394,6 +323,81 @@ void on_mouse_button_down(const SDL_Event& e)
 	else if (e.button.button == 3) {
 		on_right_mouse_button_down();
 	}
+}
+
+
+void on_left_mouse_button_down()
+{
+	if (vertexPopup.opened()) {
+		return;
+	}
+
+	int i = graphView.getCircleOnCoords(basis.window_to_loc_x(mouse.x), basis.window_to_loc_y(mouse.y));
+
+	if (i >= 0) {
+		graphView.select(i);
+	}
+	else {
+		graphView.select(i, false);
+	}
+
+	if (graphView.selected >= 0 && graphView.selected == graphView.previousSelected) {
+		return;
+	}
+
+	if (graphView.selected >= 0 && graphView.previousSelected < 0) {
+		return;
+	}
+
+	if (graphView.hasEdge(graphView.previousSelected, graphView.selected)) {
+		graphView.unselectAll();
+		return;
+	}
+
+	vertexPopup.open();
+
+	if (graphView.selected < 0)
+	{
+		graphView.addVertexDraft(basis.window_to_loc_x(mouse.x), basis.window_to_loc_y(mouse.y));
+	}
+}
+
+void on_right_mouse_button_down()
+{
+	int i = graphView.getCircleOnCoords(basis.window_to_loc_x(mouse.x), basis.window_to_loc_y(mouse.y));
+
+	if (i < 0) {
+		graphView.unselectAll();
+		return;
+	}
+
+	graphView.select(i);
+
+	if (graphView.selected >= 0 && graphView.selected == graphView.previousSelected) {
+		return;
+	}
+
+	if (graphView.selected >= 0 && graphView.previousSelected < 0) {
+		return;
+	}
+
+	std::string src = graphView.getPreviousSelectedCircle()->name;
+	std::string dest = graphView.getSelectedCircle()->name;
+
+	VertexTrace res = graph.getDistanceTo(src, dest);
+	if (res.distance != FLT_MAX) {
+		distance = std::format("p({}, {}) = {:.1f}", src, dest, res.distance);
+
+		path = src + " -> " + join(res.path, " -> ");
+	}
+	else {
+		distance = std::format("There is no path for ({}, {})", src, dest);
+		path = "";
+	}
+
+	printf("%s\n", distance.c_str());
+
+	graphView.unselectAll();
 }
 
 
